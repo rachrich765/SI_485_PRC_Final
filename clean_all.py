@@ -86,17 +86,15 @@ def remove_duplicates(y):
             return result
 
     data['Individuals Affected'] = data['Individuals Affected'].apply(lambda x: clean_number(x))
-    print (data['Name of Entity'])
     # get all data where Name of Entity, Start Date, and End Date match
     #duplicates = pd.concat(g for _, g in data.groupby(["Name of Entity", "Start Date of Breach", "End Date of Breach"]))
     dropped_data = data.groupby(["Name of Entity", "Start Date of Breach"]).agg({"Name of Entity":keep_data, "Start Date of Breach":keep_data,
         'Individuals Affected' : np.max, 
         'State Reported' : sum_states, 'Data Stolen': keep_data, 'Date Notice Provided to Consumers': keep_data,
-        'Date(s) of Discovery of Breach': keep_data,'Dates of Breach':keep_data,
-        'End Date of Breach': keep_data,'Entity Type': keep_data, 
+        'Date(s) of Discovery of Breach': keep_data,'Dates of Breach':keep_data,'Industry': keep_data, 
+        'Parent Company': keep_data, 'Website': keep_data, 'End Date of Breach': keep_data,'Entity Type': keep_data, 
         'Link to PDF': keep_data, 'Location of Breached Information': keep_data, 
-        'Reported Date':keep_data,'Type of Breach': keep_data})#'Details': keep_data,'Industry': keep_data, 'Parent Company': keep_data, 'Website': keep_data
-    print(dropped_data['Name of Entity'])
+        'Reported Date':keep_data,'Type of Breach': keep_data})#'Details': keep_data,
 
     return dropped_data
     
