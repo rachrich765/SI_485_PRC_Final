@@ -1,24 +1,32 @@
-import lxml.html as lh
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
+from sklearn import model_selection, preprocessing, naive_bayes
+from sklearn.feature_extraction.text import CountVectorizer
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.keys import Keys
 from pandas.io.json import json_normalize
+from six.moves import cPickle as pickle
+from nltk.corpus import stopwords
+from collections import Counter
+from selenium import webdriver
 from bs4 import BeautifulSoup
 from tabula import read_pdf
 from pathlib import Path
+import lxml.html as lh
 import pandas as pd
 import numpy as np
 import textract
 import requests
 import datetime
+import sklearn
+import string
 import json
-import os
+import nltk
 import csv
-import re
 import time
-import numpy as np
+import re
+import os
+
 
 def download_parse_file(url):
     print ('downloading')
@@ -47,19 +55,6 @@ def download_parse_file(url):
     return str(file)
 
 #Clean Dates Columns
-def guess_date(date):
-    split_date = str(date).split("/")
-    if(len(split_date) == 2):
-        date = "/".join([split_date[0],"01",split_date[1]])
-    try:
-        x = dateutil.parser.parse(date)
-        x = x.strftime('%x')
-#         print(date, x)
-        return x
-    except:
-        return date
-
-
 
 #df.to_csv('data_breach_chronology_new_dates.csv')
 
@@ -103,46 +98,19 @@ def find_datatype_breached(pdf_text):
 
 def clean_new_data(dataframe):
   df = dataframe
-  #split_date = df['Dates of Breach'].apply(lambda x: re.split('-|–|to|and|through', str(x)))
-  #df["Start Date of Breach"] = split_date.apply(lambda x: guess_date(x[0]))
-  #df['End Date of Breach'] = split_date.apply(lambda x: guess_date(x[1]) if len(x) > 1 else None)
-  #df['Reported Date'] = df['Reported Date'].apply(guess_date)
-  #df['Date(s) of Discovery of Breach'] = df['Date(s) of Discovery of Breach'].apply(guess_date)
 
+  #Download and parse PDF and find datatype breached
   df['PDF text'] = df['Link to PDF'].apply(download_parse_file)
-  #df['Data Stolen'] = df['Data Stolen'] + df['PDF text'].apply(find_datatype_breached)
   df['Data Stolen'] = df['PDF text'].apply(find_datatype_breached)
-  #df = df.drop(columns = ['PDF text'])
 
   return df
 
-# coding: utf-8
-
-# In[46]:
-
-import pandas as pd
-import string
-import re
-import numpy as np
-
-from six.moves import cPickle as pickle
-
-import nltk
-from nltk.corpus import stopwords
-
-import sklearn
-from sklearn import model_selection, preprocessing, naive_bayes
-from sklearn.feature_extraction.text import CountVectorizer
-
+#Open the classifier
 with open('nb_breach_type_large.pkl', 'rb') as fid:
     l_nb_loaded = pickle.load(fid)
 l_vecs = pd.read_csv('large_count_vectors.csv')
 
-from collections import Counter
-
-
-# In[92]:
-
+# Use word count method on type of breach column to classify type of breach
 def get_breach_type_cause(large_df):
     master = large_df
     causes_sorted_1 = []
@@ -181,10 +149,7 @@ def get_breach_type_cause(large_df):
         causes_sorted_1.append("UND")
             
     return causes_sorted_1
-# l has "UND" for not yet determined
 
-
-# In[93]:
 
 def clean_pdf_text(pdf_text):
     modified = stopwords.words('english')
@@ -206,9 +171,7 @@ def clean_pdf_text(pdf_text):
     no_st = ' '.join(a)
     return no_st
 
-
-# In[319]:
-
+# Use machinee learning method on PDF text to classify type of breach
 def get_breach_type_classifier(large_df, l_vecs = l_vecs, l_nb = l_nb_loaded):
     causes_sorted_2 = []
     words_for_1 = ['unauthorized', 'fraud', 'attack', 'malicious', 'compromise', 'suspicious', 'malware', 'ransomware', 
@@ -306,12 +269,9 @@ def get_breach_type_classifier(large_df, l_vecs = l_vecs, l_nb = l_nb_loaded):
             
     return causes_sorted_2
 
-##l1 = result of running get_breach_type_cause
-## l2 = result of running second function
 
+#combine the results of both breach type methods and retain the more effective
 def final_list(l1, l2):
-    print(len(l1))
-    print(len(l2))
     assert len(l1) == len(l2)
     final = []
     for i in range(0, len(l1)):

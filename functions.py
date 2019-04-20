@@ -1,35 +1,28 @@
-
-import lxml.html as lh
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.keys import Keys
 from pandas.io.json import json_normalize
+from urllib.parse import urlparse
+from selenium import webdriver
 from bs4 import BeautifulSoup
+from datetime import datetime
 from tabula import read_pdf
 from pathlib import Path
-from urllib.parse import urlparse
-from datetime import datetime
-import urllib
+import lxml.html as lh
 import pandas as pd
 import numpy as np
 import textract
 import requests
 import datetime
+import urllib
 import json
-import os
+import time
 import csv
+import os
 import re
-import time
-import pandas as pd
-from bs4 import BeautifulSoup
-import time
-from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
 
-
-
+# Takes a url and returns html contents of the page
 def basic_beautiful_soup(url):
     
     code = requests.get(url)
@@ -37,6 +30,7 @@ def basic_beautiful_soup(url):
     s = BeautifulSoup(plain, "html.parser")
     return s
     
+# Takes a link to a pdf and returns the text contents if possible
 def download_parse_file(url):
     
     # Get the contents of the pdf file
@@ -64,6 +58,7 @@ def download_parse_file(url):
     # Return the string contents of the pdf
     return file
 
+# Takes date in format mm/dd/yy or mm-dd-yy and returns date in datetime format
 def guess_date_dashesandslashes(date):
     date = str(date)
     if date.count('-') > 1:
@@ -89,6 +84,7 @@ def guess_date_dashesandslashes(date):
     else:
         return date
 
+# Takes date in format mm/dd/yyyy and returns date in datetime format
 def guess_date_mm_dd_yyyy(date):
     split_date = str(date).split("/")
     if(len(split_date) == 2):
@@ -101,6 +97,7 @@ def guess_date_mm_dd_yyyy(date):
     except:
         return date
 
+# Takes date in format yyyy-mm-dd and returns date in datetime format
 def guess_date_yyyy_mm_dd(date):
     split_date = str(date).split("-")
     if(len(split_date) == 2):
@@ -112,6 +109,8 @@ def guess_date_yyyy_mm_dd(date):
 
     except:
         return date
+
+# Takes date in format mm/dd/yy and returns date in datetime format
 def guess_date_mm_dd_yy(date):
     split_date = str(date).split("/")
     if(len(split_date) == 2):
@@ -124,6 +123,7 @@ def guess_date_mm_dd_yy(date):
     except:
         return date
 
+# Takes date in format day, mm dd, yyyy and returns date in datetime format
 def date_w_day(date):
     try:
         date = datetime.datetime.strptime(date, "%A, %B %d, %Y")
@@ -131,6 +131,7 @@ def date_w_day(date):
     except:
         return date
 
+# Takes date in format mm dd, yyyy and returns date in datetime format
 def guess_date_month_dd_yyyy(date):
     try:
         date = datetime.datetime.strptime(date, "%B %d, %Y")
@@ -186,6 +187,7 @@ def update_Oregon(most_recent_breach):
     df = df.reset_index(drop=True)
     df = df.rename(index=str, columns={"Organization": "Name of Entity", 'Notice Provided to Consumers': 'Date Notice Provided to Consumers'})
     df['State Reported'] = 'Oregon'
+    df['Source(s)'] = 'https://justice.oregon.gov/consumer/DataBreach/Home/'
 
     split_date = df['Dates of Breach'].apply(lambda x: re.split(' - |,', str(x)))
     df["Start Date of Breach"] = split_date.apply(lambda x: guess_date_mm_dd_yyyy(x[0].strip('Between ')))
@@ -195,9 +197,9 @@ def update_Oregon(most_recent_breach):
     df['Date Notice Provided to Consumers'] = df['Date Notice Provided to Consumers'].apply(date_w_day)
     df = df.reset_index(drop=True)
     #print (most_recent_breach in df['Link'])
+    oregon = df[int(df.index[df['Link'] == most_recent_breach][0])-1:]
     try:
         oregon = df[int(df.index[df['Link'] == most_recent_breach][0])-1:]
-        print (len(oregon))
     except:
         oregon = df
 
@@ -237,6 +239,7 @@ def update_Wisconsin(most_recent_breach):
     wisconsin = pd.concat([wisconsin_now, wisconsin_archive], ignore_index = True)
     wisconsin = wisconsin.drop(columns = ['Details'])
     wisconsin['State Reported'] = 'Wisconsin'
+    wisconsin['Source(s)'] = 'https://datcp.wi.gov/Pages/Programs_Services/DataBreaches.aspx'
     split_date = wisconsin['Dates of Breach'].apply(lambda x: re.split('-|–| to |and| through ', str(x)))
     #split_date = df['Dates of Breach'].apply(lambda x: re.split('-', str(x)))
     wisconsin["Start Date of Breach"] = split_date.apply(lambda x: guess_date_month_dd_yyyy(x[0].strip('Between ')))
@@ -296,6 +299,7 @@ def update_Vermont(most_recent_breach, finished_year):
 
     vermont = pd.DataFrame(vermont_dict)
     vermont['State Reported'] = 'Vermont'
+    vermont['Source(s)'] = 'https://ago.vermont.gov/archived-security-breaches/'
     vermont['Date Notice Provided to Consumers'] = vermont['Link to PDF'].apply(lambda x: x[34:36]+'/'+x[37:39]+'/'+x[29:33]) 
     vermont['Date Notice Provided to Consumers'] = vermont['Date Notice Provided to Consumers'].apply(guess_date_mm_dd_yyyy)
 
@@ -321,6 +325,7 @@ def update_Washington(most_recent_breach):
     washington = washington.rename(index = str, columns = {0:'Reported Date', 1:'Name of Entity', 2:'Dates of Breach'})
     washington = washington.dropna()
     washington['State Reported'] = 'Washington'
+    washington['Source(s)'] = 'https://www.atg.wa.gov/data-breach-notifications'
 
     s = basic_beautiful_soup(url)
     pdf_links = []
@@ -334,6 +339,8 @@ def update_Washington(most_recent_breach):
     washington['Reported Date'] = washington['Reported Date'].apply(guess_date_mm_dd_yyyy)    #split_date = df['Dates of Breach'].apply(lambda x: re.split('', str(x)))
     washington["Start Date of Breach"] = split_date.apply(lambda x: guess_date_mm_dd_yyyy(x[0]))
     washington['End Date of Breach'] = split_date.apply(lambda x: guess_date_mm_dd_yyyy(x[-1]) if len(x) > 1 else None)
+    index = int(washington.index[washington['Link to PDF'] == most_recent_breach][0])
+    washington = washington[:index+1]
     try:
         index = int(washington.index[washington['Link to PDF'] == most_recent_breach][0])
         washington = washington[:index+1]
@@ -384,6 +391,7 @@ def update_California(most_recent_breach):
         pass
 
     california['State Reported'] = 'California'
+    california['Source(s)'] ='https://oag.ca.gov/privacy/databreach/list'
     most_recent_breach = pdfs[0]
 
     return california, most_recent_breach
@@ -468,6 +476,7 @@ def update_Indiana(most_recent_breaches):
     indiana = indiana.drop(columns = ['Number of Consumers Affected Nationwide','Number of IN Residents Affected','Status', 'Unnamed: 1'])
     
     indiana['State Reported'] = 'Indiana'
+    indiana['Source(s)'] = 'https://www.in.gov/attorneygeneral/2874.htm'
     indiana['date,name'] = indiana['Name of Entity'] + '|' + str(indiana['Dates of Breach'].fillna('none'))
     indiana.to_csv('indiana_recency.csv')
     indiana['Date Notice Provided to Consumers'] = indiana['Date Notice Provided to Consumers'].apply(guess_date_yyyy_mm_dd)   #split_date = df['Dates of Breach'].apply(lambda x: re.split('', str(x)))
@@ -545,6 +554,7 @@ def update_Iowa(most_recent_breach, finished_year):
                 temp = temp.rename(columns = {'DATE REPORTED':'Reported Date','ORGANIZATION NAME':'Name of Entity'})
             iowa = iowa.append(temp,ignore_index=True)
     iowa['State Reported'] = 'Iowa'
+    iowa['Source(s)'] = 'https://www.iowaattorneygeneral.gov/for-consumers/security-breach-notifications/'
     iowa['Reported Date'] = iowa['Reported Date'].apply(guess_date_dashesandslashes)
     new_most_recent_breach = iowa['Link to PDF'].iloc[-1]
     try:
@@ -586,6 +596,7 @@ def update_Delaware(de_df):
     delaware['Individuals Affected'] = delaware['Individuals Affected'].apply(lambda x: str(x)+'(in Delaware)')
     delaware['Link to PDF'] = pdfs
     delaware['State Reported'] = 'Delaware'
+    delaware['Source(s)'] = 'https://attorneygeneral.delaware.gov/fraud/cpu/securitybreachnotification/database/'
 
     split_date = delaware['Dates of Breach'].apply(lambda x: re.split('–', str(x)))
     delaware["Start Date of Breach"] = split_date.apply(lambda x: guess_date_mm_dd_yy(x[0].strip()))
@@ -705,6 +716,7 @@ def update_NewHampshire(nh_df):
     #newhampshire['PDF text (ALL)'] = newhampshire['Link to PDF'].apply(download_parse_file)
     
     newhampshire['State Reported'] = 'New Hampshire'
+    newhampshire['Source(s)'] = 'https://www.doj.nh.gov/consumer/security-breaches/'
     newhampshire = clean_NH_data(newhampshire)
 
     newhampshire = newhampshire[~newhampshire['Link to PDF'].isin(drop_these)]
@@ -776,6 +788,7 @@ def update_NewJersey(most_recent_breach):
     newjersey = pd.DataFrame(rows)
 
     newjersey['State Reported'] = 'New Jersey'
+    newjersey['Source(s)'] = 'https://www.cyber.nj.gov/data-breach-notifications/'
     newjersey = NJ_clean_dates(newjersey)
     try:
         newjersey = newjersey[:int(newjersey.index[newjersey['Name of Entity'] == most_recent_breach][0])+1]
@@ -823,6 +836,7 @@ def update_USDeptHealth(most_recent_breach):
         'Covered Entity Type': "Entity Type", 'Breach Submission Date': 'Reported Date'})
     states = { 'AK': 'Alaska', 'AL': 'Alabama', 'AR': 'Arkansas', 'AS': 'American Samoa', 'AZ': 'Arizona', 'CA': 'California', 'CO': 'Colorado', 'CT': 'Connecticut', 'DC': 'District of Columbia', 'DE': 'Delaware', 'FL': 'Florida', 'GA': 'Georgia', 'GU': 'Guam', 'HI': 'Hawaii', 'IA': 'Iowa', 'ID': 'Idaho', 'IL': 'Illinois', 'IN': 'Indiana', 'KS': 'Kansas', 'KY': 'Kentucky', 'LA': 'Louisiana', 'MA': 'Massachusetts', 'MD': 'Maryland', 'ME': 'Maine', 'MI': 'Michigan', 'MN': 'Minnesota', 'MO': 'Missouri', 'MP': 'Northern Mariana Islands', 'MS': 'Mississippi', 'MT': 'Montana', 'NA': 'National', 'NC': 'North Carolina', 'ND': 'North Dakota', 'NE': 'Nebraska', 'NH': 'New Hampshire', 'NJ': 'New Jersey', 'NM': 'New Mexico', 'NV': 'Nevada', 'NY': 'New York', 'OH': 'Ohio', 'OK': 'Oklahoma', 'OR': 'Oregon', 'PA': 'Pennsylvania', 'PR': 'Puerto Rico', 'RI': 'Rhode Island', 'SC': 'South Carolina', 'SD': 'South Dakota', 'TN': 'Tennessee', 'TX': 'Texas', 'UT': 'Utah', 'VA': 'Virginia', 'VI': 'Virgin Islands', 'VT': 'Vermont', 'WA': 'Washington', 'WI': 'Wisconsin', 'WV': 'West Virginia', 'WY': 'Wyoming' }
     usdh['State Reported'] = usdh['State Reported'].apply(lambda x: states[x])
+    usdh['Source(s)'] = 'https://ocrportal.hhs.gov/ocr/breach/breach_report.jsf'
     usdh = usdh.drop(columns = ['Expand All'])
     usdh['Reported Date'] = usdh['Reported Date'].apply(guess_date_mm_dd_yyyy)
     try:
@@ -943,6 +957,7 @@ def update_Maine(most_recent_breach):
 
     maine = pd.concat([maine_current, maine_arch], ignore_index = True)
     maine['State Reported'] = 'Maine'
+    maine['Source(s)'] = 'https://www.maine.gov/ag/consumer/identity_theft/'
     maine = maine.drop(columns = ['Entity Address'])
     
     try:
@@ -1016,6 +1031,7 @@ def update_Maryland(most_recent_breach):
     maryland = maryland.rename(index=str, columns={"case_title": "Name of Entity", 'no_of_md_residents':'Individuals Affected', 
         'date_received': "Dates of Breach", 'how_breach_occurred': 'Type of Breach'})
     maryland['State Reported'] = 'Maryland'
+    maryland['Source(s)'] = 'http://www.marylandattorneygeneral.gov/Pages/IdentityTheft/breachnotices.aspx'
 
     maryland["Start Date of Breach"] = maryland['Dates of Breach'].apply(guess_date_mm_dd_yyyy)
     new_most_recent_breach = maryland['Name of Entity'].iloc[-1]
@@ -1083,6 +1099,7 @@ def update_Montana(most_recent_breach):
     montana = montana.drop(columns = ['NOTIFICATION DOCUMENTS','START OF BREACH','END OF BREACH'])
     montana = montana.rename(index=str, columns={"BUSINESS NAME": "Name of Entity", 'MONTANANS AFFECTED':'Individuals Affected', 'DATE REPORTED': "Reported Date"})
     montana['State Reported'] = 'Montana'
+    montana['Source(s)'] = 'https://dojmt.gov/consumer/consumers-known-data-breach-incidents/#'
 
     split_date = montana['Dates of Breach'].apply(lambda x: re.split('-', str(x)))
     montana["Start Date of Breach"] = split_date.apply(lambda x: guess_date_mm_dd_yyyy(x[0]))

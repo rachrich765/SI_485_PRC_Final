@@ -20,6 +20,7 @@ def wikipedia_api(company_name):
 	print ('wikipedia')
 	return info_box
 
+#Gather industry from info box if there
 def get_industry(info_box):
 	try:
 		industry = info_box.loc['Industry',1]
@@ -27,6 +28,7 @@ def get_industry(info_box):
 		industry = ''
 	return industry
 
+#Gather website from info box if there
 def get_website(info_box):
 	try:
 		website  = re.findall(r'w*\.*[a-zA-Z0-9]+\.com',info_box.loc['Website',1])[0]
@@ -34,14 +36,16 @@ def get_website(info_box):
 		website = ''
 	return website
 
+#Gather parent company from info box if there
 def get_parent(info_box):
 	try:
 		parent = info_box.loc['Parent',1]
 	except:
 		parent = ''
 	return parent
-def add_data(data_breach_chronology):
 
+#Add all gathered information to the data breach chronology dataframe
+def add_data(data_breach_chronology):
 	data_breach_chronology['temp'] = data_breach_chronology['Name of Entity'].apply(wikipedia_api)
 	data_breach_chronology['Industry'] = data_breach_chronology['temp'].apply(get_industry)
 	data_breach_chronology['Website'] = data_breach_chronology['temp'].apply(get_website)

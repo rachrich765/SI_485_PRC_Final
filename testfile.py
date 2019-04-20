@@ -5,6 +5,7 @@ from add_info import *
 import numpy as np
 
 added_data = pd.read_csv('data_breach_chronology_new.csv')
+'''
 cleaned_new_df = clean_new_data(added_data)
 type1_list = get_breach_type_cause(cleaned_new_df)
 type2_list = get_breach_type_classifier(cleaned_new_df)
@@ -16,3 +17,7 @@ cleaned_new_df = cleaned_new_df.drop(columns = ['PDF text'])
 # export data breach chronology and update the recent file
 final_df.to_csv('data_breach_chronology_new.csv', index = False)
 #recent.to_csv('recent.csv')
+'''
+final_df = clean_ents(added_data)
+final_df = remove_duplicates(final_df)
+final_df.to_csv('data_breach_chronology_new.csv', index = False)

@@ -1,18 +1,13 @@
-import pandas as pd
-import string
-import re
-import approxidate
 from datetime import datetime
 import dateutil.parser
+import pandas as pd
 import numpy as np
-
-#df = pd.read_csv('data_breach_chronology.csv')
-#Clean Name of Entity Column
+import approxidate
 import string
 import re
 
 def clean_ents(df_master):
-    #df_master = pd.read_csv(csv_file)
+    # Take the 'Name of Entity' column and remove extra characters
     entities = list(df_master["Name of Entity"].fillna("[None Named]"))
     low_ents = [x.lower() for x in entities] #make all lowercase
     low_ents = [re.sub("-databreach","",x) for x in low_ents] #removes -databreach string at end
@@ -30,7 +25,6 @@ def clean_ents(df_master):
         ent = re.sub("[^A-z0-9]","",entity) #remove punctuation
         no_space_punc[entity] = ent
     no_space_punc_reversed = inv_map = [(v, k) for k, v in no_space_punc.items()]
-#     print(len(no_space_punc_reversed))
 
     #making a list of duplicates
     dups = []
@@ -59,11 +53,12 @@ def clean_ents(df_master):
 def remove_duplicates(y):
     data = y
 
+    #This function takes a string returns the number (if any) within it 
     def clean_number(x):
         # only get number of individuals affected
         m = re.search(r"([\d,]+)", str(x))
         if m is not None:
-            #  strip comma from number
+            # strip comma from number
             try:
                 return int(re.sub(",", "", m.group(1)))
             except:
@@ -71,12 +66,50 @@ def remove_duplicates(y):
         else:
             return None
 
+    #This creates a list of eevery state in which the breach was reported
     def sum_states(x):
+        result = []
+        for item in x:
+            item = str(item)
+            if 'California' in item:
+                result.append('California')
+            if 'Iowa' in item:
+                result.append('Iowa')
+            if 'Indiana' in item:
+                result.append('Indiana')
+            if 'Delaware' in item:
+                result.append('Delaware')
+            if 'Maine' in item:
+                result.append('Maine')
+            if 'Maryland' in item:
+                result.append('Maryland')
+            if 'Montana' in item:
+                result.append('Montana')
+            if 'New Hampshire' in item:
+                result.append('New Hampshire')
+            if 'New Jersey' in item:
+                result.append('New Jersey')
+            if 'Oregon' in item:
+                result.append('Oregon')
+            if 'Washington' in item:
+                result.append('Washington')
+            if 'Wisconsin' in item:
+                result.append('Wisconsin')
+            if 'Vermont' in item:
+                result.append('Vermont')
+        result = set(result)
+        return result
+
+     #This creates a list of eevery state in which the breach was reported
+    def sum_urls(x):
         result = []
         for item in x:
             if item not in result:
                 result.append(item)
+        result = set(result)
         return result
+
+    #This function retains the data of duplicate breaches
     def keep_data(x):
         result = ''
         for item in x:
@@ -86,20 +119,16 @@ def remove_duplicates(y):
             return result
 
     data['Individuals Affected'] = data['Individuals Affected'].apply(lambda x: clean_number(x))
-    # get all data where Name of Entity, Start Date, and End Date match
-    #duplicates = pd.concat(g for _, g in data.groupby(["Name of Entity", "Start Date of Breach", "End Date of Breach"]))
+    data['Start Date of Breach'] = data['Start Date of Breach'].fillna('Not Specified')
+    # get all data where Name of Entity and Start Date match, retain the data and return the dataframe.
     dropped_data = data.groupby(["Name of Entity", "Start Date of Breach"]).agg({"Name of Entity":keep_data, "Start Date of Breach":keep_data,
         'Individuals Affected' : np.max, 
         'State Reported' : sum_states, 'Data Stolen': keep_data, 'Date Notice Provided to Consumers': keep_data,
         'Date(s) of Discovery of Breach': keep_data,'Dates of Breach':keep_data,'Industry': keep_data, 
-        'Parent Company': keep_data, 'Website': keep_data, 'End Date of Breach': keep_data,'Entity Type': keep_data, 
+        'Parent Company': keep_data, 'Website': keep_data, 'End Date of Breach': keep_data, 
         'Link to PDF': keep_data, 'Location of Breached Information': keep_data, 
-        'Reported Date':keep_data,'Type of Breach': keep_data})#'Details': keep_data,
+        'Reported Date':keep_data,'Type of Breach': keep_data, 'Source(s)':sum_urls})#'Details': keep_data,
 
     return dropped_data
     
-
-# replce the csv file name with the name of our dataframe
-#remove_licates(pd.read_csv('C:/Users/atrm1/Downloads/new_dates.csv'))
-
 

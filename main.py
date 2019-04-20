@@ -11,7 +11,7 @@ recent = pd.read_csv('recent.csv').set_index('state')
 columns = ['Name of Entity', 'Dates of Breach', 'Reported Date',
        'Date(s) of Discovery of Breach', 'Date Notice Provided to Consumers',
        'Data Stolen', 'Type of Breach','Individuals Affected',
-       'State Reported','Link to PDF']
+       'State Reported','Link to PDF','Location of Breached Information']
 new_this_run = pd.DataFrame(columns = columns)
 
 #California
@@ -119,7 +119,6 @@ else:
 new_this_run = new_this_run.append(nh_df,ignore_index=True)
 print ('\n', 'Fetched New Hampshire Data', '\n')
 
-
 #New Jersey
 nj_df, nj_recent = update_NewJersey(recent['recent']['New Jersey'])
 recent['recent']['New Jersey'] = nj_recent
@@ -144,7 +143,6 @@ else:
 
 new_this_run = new_this_run.append(or_df,ignore_index=True)
 print ('\n', 'Fetched Oregon Data', '\n')
-
 
 #US Department of Health
 usdh_df, usdh_recent = update_USDeptHealth(recent['recent']['Department of Health'])
@@ -197,7 +195,6 @@ else:
 
 new_this_run = new_this_run.append(wi_df, ignore_index = True)
 print ('\n', 'Fetched Wisconsin Data', '\n')
-
 
 # Clean new data
 new_this_run.to_csv('test_new.csv')
