@@ -15,31 +15,31 @@ crontab -l
 ## Prerequisites
 The following packages must be installed prior to running the program. [UMSI will hold a meeting with Privacy Rights Clearinghouse to help facilitate downloads].
 - datetime
-	pip install datetime
+	- pip install datetime
 - Pandas
-	pip install pandas
+	- pip install pandas
 - Regex
-	pip install regex
+	- pip install regex
 - Textract
-	pip install homebrew
-	brew cask install xquartz 
-	brew install poppler antiword unrtf tesseract swig 
-	pip install textract
-	brew cask install pdftotext
+	- pip install homebrew
+	- brew cask install xquartz 
+	- brew install poppler antiword unrtf tesseract swig 
+	- pip install textract
+	- brew cask install pdftotext
 - Scikit learn
-	pip install scikit-learn
+	- pip install scikit-learn
 - Selenium
-	pip install selenium
+	- pip install selenium
 - ChromeDriver
-	We have included this in the github repository 
+	- We have included this in the github repository 
 - Tabula
-	pip install tabula-py
+	- pip install tabula-py
 - Beautiful Soup
-	pip install beautifulsoup4
+	- pip install beautifulsoup4
 - Requests 
-	pip install requests
+	- pip install requests
 - Wikipedia
-	pip install wikipedia
+	- pip install wikipedia
 
 ## Files
 
