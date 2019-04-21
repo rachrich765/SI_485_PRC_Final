@@ -157,12 +157,12 @@ Each data source has a separate csv file with the raw data collected from their 
 
 ## Authors
 
-Julie Burke
-Zi Huang
-Sam Karmin 
-Rachel Richardson
+- Julie Burke
+- Zi Huang
+- Sam Karmin 
+- Rachel Richardson
 
 ## Acknowledgments
 
-sThis project was completed with guidance from our course instructors (Professor Kevyn Collins-Thompson and Ryan Burton) of SI485 at the University of Michigan School of Information.
+This project was completed with guidance from our course instructors (Professor Kevyn Collins-Thompson and Ryan Burton) of SI485 at the University of Michigan School of Information.
 We worked closely with our client, Emory Roane, from Privacy Rights Clearinghouse
