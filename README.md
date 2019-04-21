@@ -1,4 +1,4 @@
-#UMSI | PRC Data Breach Chronology Importer
+# UMSI | PRC Data Breach Chronology Importer
 This tool contains code to import the publically accessible records of data breaches that have occured in the United States. It merges all of that data together and supplements it with additional data parsed from PDFs and gathered via the wikipedia API.
 ##Getting Started and Deployment 
 To use this tool, once the prerequisites are installed, run python main.py from the terminal application. To do so, open the terminal application on your mac computer. You will then need to navigate to the directory where the file is stored using the cd (change directory) command. When you are in the folder, run python main.py to trigger the program. It will output various csv files (discussed at the end of the document).
