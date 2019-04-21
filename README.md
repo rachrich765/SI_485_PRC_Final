@@ -128,7 +128,7 @@ This file allows the chrome driver, an open source tool, that allows for JavaScr
 
 ### data_chronology_importer_new.csv 
 
-This is the final csv that contains all of the collected data breaches. It has been cleaned and supplemented with additional information. The number of rows will continually change, but should always exceed 9933 rows (as of 4/18/19). The columns are:
+This is the final csv that contains all of the collected data breaches. It has been cleaned and supplemented with additional information. The number of rows will continually change, but should always exceed 8007 rows (as of 4/18/19). The columns are:
 - Name of Entity 
 - Start Date of Breach
 - End Date of Breach 
