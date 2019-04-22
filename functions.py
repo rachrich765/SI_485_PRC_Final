@@ -197,14 +197,14 @@ def update_Oregon(most_recent_breach):
     df['Date Notice Provided to Consumers'] = df['Date Notice Provided to Consumers'].apply(date_w_day)
     df = df.reset_index(drop=True)
     #print (most_recent_breach in df['Link'])
-    oregon = df[int(df.index[df['Link'] == most_recent_breach][0])-1:]
+    oregon = df[int(df.index[df['Name of Entity'] == most_recent_breach][0]):]
     try:
-        oregon = df[int(df.index[df['Link'] == most_recent_breach][0])-1:]
+        oregon = df[int(df.index[df['Name of Entity'] == most_recent_breach][0]):]
     except:
         oregon = df
 
-    most_recent_breach = more_info_urls[-1]
-    #oregon = oregon.drop(columns = ['Link'])
+    most_recent_breach = oregon['Name of Entity'].iloc[-1]
+    oregon = oregon.drop(columns = ['Link'])
     return oregon, most_recent_breach
 
 
@@ -339,8 +339,7 @@ def update_Washington(most_recent_breach):
     washington['Reported Date'] = washington['Reported Date'].apply(guess_date_mm_dd_yyyy)    #split_date = df['Dates of Breach'].apply(lambda x: re.split('', str(x)))
     washington["Start Date of Breach"] = split_date.apply(lambda x: guess_date_mm_dd_yyyy(x[0]))
     washington['End Date of Breach'] = split_date.apply(lambda x: guess_date_mm_dd_yyyy(x[-1]) if len(x) > 1 else None)
-    index = int(washington.index[washington['Link to PDF'] == most_recent_breach][0])
-    washington = washington[:index+1]
+    
     try:
         index = int(washington.index[washington['Link to PDF'] == most_recent_breach][0])
         washington = washington[:index+1]

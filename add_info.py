@@ -2,10 +2,6 @@ import wikipedia
 import pandas as pd
 import re
 
-#data_breach_chronology = pd.read_csv('data_breach_chronology.csv')
-
-# Process PDFs
-
 # Wikipedia API
 def wikipedia_api(company_name):
 	# Check if there is a wikipedia page for the entity 

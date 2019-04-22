@@ -2,7 +2,6 @@ from functions import *
 from clean_new import *
 from clean_all import *
 from add_info import *
-import numpy as np
 
 # read in the file that tracks the most recent breach for each state
 recent = pd.read_csv('recent.csv').set_index('state')
@@ -171,7 +170,7 @@ new_this_run = new_this_run.append(vt_df,ignore_index=True)
 print ('\n', 'Fetched Vermont Data', '\n')
 
 #Washington
-wa_df, wa_recent = update_Washington('xyz')
+wa_df, wa_recent = update_Washington(recent['recent']['Washington'])
 recent['recent']['Washington'] = wa_recent
 if os.path.isfile('washington.csv'):
 	washington = pd.read_csv('washington.csv')
