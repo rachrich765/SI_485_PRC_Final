@@ -52,9 +52,7 @@ def download_parse_file(url):
             page = page.lower()
             page_content.append(page)
         page_content = ''.join(page_content)
-        print (page_content)
     except:
-        print ('not working')
         page_content = "Unreadable File" 
     # Try to convert the contents of the pdf to a string     
     #try:
