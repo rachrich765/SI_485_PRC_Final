@@ -17,7 +17,6 @@ from pathlib import Path
 import lxml.html as lh
 import pandas as pd
 import numpy as np
-import textract
 import requests
 import datetime
 import urllib
@@ -54,7 +53,6 @@ import PyPDF2
 import lxml.html as lh
 import pandas as pd
 import numpy as np
-import textract
 import requests
 import datetime
 import sklearn
