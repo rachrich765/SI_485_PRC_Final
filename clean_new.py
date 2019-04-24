@@ -12,6 +12,7 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 from tabula import read_pdf
 from pathlib import Path
+import PyPDF2
 import lxml.html as lh
 import pandas as pd
 import numpy as np
@@ -41,18 +42,32 @@ def download_parse_file(url):
     with open("new_pdf.pdf", 'wb') as my_data:
         my_data.write(my_raw_data)
     my_data.close()
-    
-    # Try to convert the contents of the pdf to a string     
     try:
-        file = textract.process('new_pdf.pdf', method='pdfminer')
+        pdf_file = open(my_data, 'rb')
+        read_pdf = PyPDF2.PdfFileReader(pdf_file)
+        number_of_pages = read_pdf.getNumPages()
+        page_content = []
+        for i in range(0, number_of_pages):
+            page = read_pdf.getPage(i)
+            page = page.extractText()
+            page = page.lower()
+            page_content.append(page)
+        page_content = ''.join(page_content)
+        print (page_content)
     except:
-        file = "Unreadable File"   
+        print ('not working')
+        page_content = "Unreadable File" 
+    # Try to convert the contents of the pdf to a string     
+    #try:
+    #    file = textract.process('new_pdf.pdf', method='pdfminer')
+    #except:
+    #    file = "Unreadable File"   
 
     # Delete the temporary file
     os.remove("new_pdf.pdf")
 
     # Return the string contents of the pdf
-    return str(file)
+    return str(page_content)
 
 #Clean Dates Columns
 

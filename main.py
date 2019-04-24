@@ -12,7 +12,7 @@ columns = ['Name of Entity', 'Dates of Breach', 'Reported Date',
        'Data Stolen', 'Type of Breach','Individuals Affected',
        'State Reported','Link to PDF','Location of Breached Information']
 new_this_run = pd.DataFrame(columns = columns)
-
+'''
 #California
 ca_df, ca_recent = update_California(recent['recent']['California'])
 recent['recent']['California'] = ca_recent
@@ -104,7 +104,7 @@ else:
 
 new_this_run = new_this_run.append(mo_df,ignore_index=True)
 print ('\n', 'Fetched Montana Data', '\n')
-
+'''
 #New Hampshire
 if os.path.isfile('newhampshire.csv'):
 	newhampshire = pd.read_csv('newhampshire.csv')
@@ -117,7 +117,7 @@ else:
 
 new_this_run = new_this_run.append(nh_df,ignore_index=True)
 print ('\n', 'Fetched New Hampshire Data', '\n')
-
+'''
 #New Jersey
 nj_df, nj_recent = update_NewJersey(recent['recent']['New Jersey'])
 recent['recent']['New Jersey'] = nj_recent
@@ -194,7 +194,7 @@ else:
 
 new_this_run = new_this_run.append(wi_df, ignore_index = True)
 print ('\n', 'Fetched Wisconsin Data', '\n')
-
+'''
 # Clean new data
 new_this_run.to_csv('test_new.csv')
 cleaned_new_df = new_this_run
