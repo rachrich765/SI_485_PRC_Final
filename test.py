@@ -3,39 +3,65 @@ import PyPDF2
 import os
 from pathlib import Path
 
-def download_parse_file(url):
-    print ('downloading')
-    # Get the contents of the pdf file
-    my_raw_data = Path('new_pdf.pdf')
-    response = requests.get(url)
-    my_raw_data.write_bytes(response.content)
-    #print (my_raw_data)
-    # Write the contents into a temporary file
-    #with open("new_pdf.pdf", 'wb') as my_data:
-    #    my_data.write(my_raw_data)
-    #my_data.close()
-    pdf_file = open(my_raw_data, 'rb')
-    read_pdf = PyPDF2.PdfFileReader(pdf_file)
-    number_of_pages = read_pdf.getNumPages()
-    page_content = []
-    for i in range(0, number_of_pages):
-        page = read_pdf.getPage(i)
-        page = page.extractText()
-        page = page.lower()
-        page_content.append(page)
-    page_content = ''.join(page_content)
-    print (page_content)
-    
-    # Try to convert the contents of the pdf to a string     
-    #try:
-    #    file = textract.process('new_pdf.pdf', method='pdfminer')
-    #except:
-    #    file = "Unreadable File"   
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.keys import Keys
+from pandas.io.json import json_normalize
+from urllib.parse import urlparse
+from selenium import webdriver
+from bs4 import BeautifulSoup
+from datetime import datetime
+from tabula import read_pdf
+from pathlib import Path
+import lxml.html as lh
+import pandas as pd
+import numpy as np
+import textract
+import requests
+import datetime
+import urllib
+import json
+import time
+import csv
+import os
+import re
 
-    # Delete the temporary file
-    os.remove("new_pdf.pdf")
+import wikipedia
+import pandas as pd
+import re
+from datetime import datetime
+import pandas as pd
+import numpy as np
+import string
+import re
 
-    # Return the string contents of the pdf
-    return str(page_content)
-
-print(download_parse_file('https://oag.ca.gov/system/files/Customer%20Notice_0.pdf'))
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support import expected_conditions as EC
+from sklearn import model_selection, preprocessing, naive_bayes
+from sklearn.feature_extraction.text import CountVectorizer
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.keys import Keys
+from pandas.io.json import json_normalize
+from six.moves import cPickle as pickle
+from nltk.corpus import stopwords
+from collections import Counter
+from selenium import webdriver
+from bs4 import BeautifulSoup
+from tabula import read_pdf
+from pathlib import Path
+import PyPDF2
+import lxml.html as lh
+import pandas as pd
+import numpy as np
+import textract
+import requests
+import datetime
+import sklearn
+import string
+import json
+import nltk
+import csv
+import time
+import re
+import os
