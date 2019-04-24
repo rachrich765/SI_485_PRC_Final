@@ -104,8 +104,35 @@ def remove_duplicates(y):
     def sum_urls(x):
         result = []
         for item in x:
-            if item not in result:
-                result.append(item)
+            item = str(item)
+            if 'https://justice.oregon.gov/consumer/DataBreach/Home/' in item:
+                result.append('https://justice.oregon.gov/consumer/DataBreach/Home/')
+            if 'https://datcp.wi.gov/Pages/Programs_Services/DataBreaches.aspx' in item:
+                result.append('https://datcp.wi.gov/Pages/Programs_Services/DataBreaches.aspx')
+            if 'https://ago.vermont.gov/archived-security-breaches/' in item:
+                result.append('https://ago.vermont.gov/archived-security-breaches/')
+            if 'https://www.atg.wa.gov/data-breach-notifications' in item:
+                result.append('https://www.atg.wa.gov/data-breach-notifications')
+            if 'https://oag.ca.gov/privacy/databreach/list' in item:
+                result.append('https://oag.ca.gov/privacy/databreach/list')
+            if 'https://www.in.gov/attorneygeneral/2874.htm' in item:
+                result.append('https://www.in.gov/attorneygeneral/2874.htm')
+            if 'https://www.iowaattorneygeneral.gov/for-consumers/security-breach-notifications/' in item:
+                result.append('https://www.iowaattorneygeneral.gov/for-consumers/security-breach-notifications/')
+            if 'https://attorneygeneral.delaware.gov/fraud/cpu/securitybreachnotification/database/' in item:
+                result.append('https://attorneygeneral.delaware.gov/fraud/cpu/securitybreachnotification/database/')
+            if 'https://www.doj.nh.gov/consumer/security-breaches/' in item:
+                result.append('https://www.doj.nh.gov/consumer/security-breaches/')
+            if 'https://www.cyber.nj.gov/data-breach-notifications/' in item:
+                result.append('https://www.cyber.nj.gov/data-breach-notifications/')
+            if 'https://ocrportal.hhs.gov/ocr/breach/breach_report.jsf' in item:
+                result.append('https://ocrportal.hhs.gov/ocr/breach/breach_report.jsf')
+            if 'https://www.maine.gov/ag/consumer/identity_theft/' in item:
+                result.append('https://www.maine.gov/ag/consumer/identity_theft/')
+            if 'http://www.marylandattorneygeneral.gov/Pages/IdentityTheft/breachnotices.aspx' in item:
+                result.append('http://www.marylandattorneygeneral.gov/Pages/IdentityTheft/breachnotices.aspx')
+            if 'https://dojmt.gov/consumer/consumers-known-data-breach-incidents/#' in item:
+                result.append('https://dojmt.gov/consumer/consumers-known-data-breach-incidents/#')
         result = set(result)
         return result
 
